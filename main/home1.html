@@ -1,0 +1,86 @@
+ <div class="row page-titles">
+    <div class="col-md-5 align-self-center">
+        <h1 class="text-themecolor">Tabel</h1>
+    </div>
+</div>
+
+<table>
+    <tbody>
+            <tr id="filter_global">
+                <td>SEARCH</td>
+                <td align="center"><input type="text" class="global_filter" id="global_filter"></td>
+                <td align="center"><input type="checkbox" class="global_filter" id="global_regex"></td>
+                <td align="center"><input type="checkbox" class="global_filter" id="global_smart" checked="checked"></td>
+            </tr>
+        </tbody>
+</table>
+
+<div class="table-responsive">
+  <table class="table" id="data-outlet">
+    <thead>
+      <tr>
+        <th>Outlet Code</th>
+        <th>Outlet Name</th>
+        <th>Address</th>
+      </tr>
+    </thead>
+        
+  </table>
+</div>
+
+<script type="text/javascript">
+$(document).ready(function() {
+        $('#data-outlet').DataTable({
+        "processing" : true,
+	    "serverSide" : true,
+	    "pageLength": 10,
+		"paging":   true,
+        
+        "ordering": true,
+        "info":     false,
+        "bFilter": true,
+		   "lengthMenu": [[10, 25, 50, -1], [10, 25, 50]],
+		   "ajax" : {
+		    url:"http://192.168.10.4:6969/list-outlet-json-limit?start=0&end=100&search=",
+		    type:"GET"
+		   	},
+		   	"columns": [
+            { "data": "OUTLET_CODE" },
+            { "data": "OUTLET_NAME" },
+            { "data": "ADDRESS_1" }
+        ]
+        });
+    });
+</script>
+
+<script>
+    
+    function filterGlobal () {
+    $('#data-outlet').DataTable().search(
+        $('#global_filter').val(),
+        $('#global_regex').prop('checked'),
+        $('#global_smart').prop('checked')
+    ).draw();
+}
+ 
+function filterColumn ( i ) {
+    $('#data-outlet').DataTable().column( i ).search(
+        $('#col'+i+'_filter').val(),
+        $('#col'+i+'_regex').prop('checked'),
+        $('#col'+i+'_smart').prop('checked')
+    ).draw();
+}
+ 
+$(document).ready(function() {
+    $('#data-outlet').DataTable();
+ 
+    $('input.global_filter').on( 'keyup click', function () {
+        filterGlobal();
+    } );
+ 
+    $('input.column_filter').on( 'keyup click', function () {
+        filterColumn( $(this).parents('tr').attr('data-column') );
+    } );
+} );
+
+</script>
